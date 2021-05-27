@@ -1,0 +1,725 @@
+{
+    "version": 0,
+    "origin": {
+        "username": "-",
+        "sessionId": "7313390956912898766",
+        "sessionVersion": 2,
+        "netType": "IN",
+        "ipVer": 4,
+        "address": "127.0.0.1"
+    },
+    "name": "-",
+    "timing": {
+        "start": 0,
+        "stop": 0
+    },
+    "groups": [
+        {
+            "type": "BUNDLE",
+            "mids": "0 1"
+        }
+    ],
+    "extmapAllowMixed": "extmap-allow-mixed",
+    "msidSemantic": {
+        "semantic": "WMS",
+        "token": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj"
+    },
+    "media": [
+        {
+            "rtp": [
+                {
+                    "payload": 111,
+                    "codec": "opus",
+                    "rate": 48000,
+                    "encoding": 2
+                },
+                {
+                    "payload": 103,
+                    "codec": "ISAC",
+                    "rate": 16000
+                },
+                {
+                    "payload": 104,
+                    "codec": "ISAC",
+                    "rate": 32000
+                },
+                {
+                    "payload": 9,
+                    "codec": "G722",
+                    "rate": 8000
+                },
+                {
+                    "payload": 0,
+                    "codec": "PCMU",
+                    "rate": 8000
+                },
+                {
+                    "payload": 8,
+                    "codec": "PCMA",
+                    "rate": 8000
+                },
+                {
+                    "payload": 106,
+                    "codec": "CN",
+                    "rate": 32000
+                },
+                {
+                    "payload": 105,
+                    "codec": "CN",
+                    "rate": 16000
+                },
+                {
+                    "payload": 13,
+                    "codec": "CN",
+                    "rate": 8000
+                },
+                {
+                    "payload": 110,
+                    "codec": "telephone-event",
+                    "rate": 48000
+                },
+                {
+                    "payload": 112,
+                    "codec": "telephone-event",
+                    "rate": 32000
+                },
+                {
+                    "payload": 113,
+                    "codec": "telephone-event",
+                    "rate": 16000
+                },
+                {
+                    "payload": 126,
+                    "codec": "telephone-event",
+                    "rate": 8000
+                }
+            ],
+            "fmtp": [
+                {
+                    "payload": 111,
+                    "config": "minptime=10;useinbandfec=1"
+                }
+            ],
+            "type": "audio",
+            "port": 9,
+            "protocol": "UDP/TLS/RTP/SAVPF",
+            "payloads": "111 103 104 9 0 8 106 105 13 110 112 113 126",
+            "connection": {
+                "version": 4,
+                "ip": "0.0.0.0"
+            },
+            "rtcp": {
+                "port": 9,
+                "netType": "IN",
+                "ipVer": 4,
+                "address": "0.0.0.0"
+            },
+            "iceUfrag": "TCXZ",
+            "icePwd": "WYATdzLgBvzwgY1BhWu4ylLx",
+            "iceOptions": "trickle",
+            "fingerprint": {
+                "type": "sha-256",
+                "hash": "E5:83:06:5F:02:29:F4:9C:30:4A:38:7E:E2:56:B3:2A:F1:CA:A1:DA:28:90:8A:42:28:32:F8:52:7F:B6:C6:E9"
+            },
+            "setup": "actpass",
+            "mid": 0,
+            "ext": [
+                {
+                    "value": 1,
+                    "uri": "urn:ietf:params:rtp-hdrext:ssrc-audio-level"
+                },
+                {
+                    "value": 2,
+                    "uri": "http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time"
+                },
+                {
+                    "value": 3,
+                    "uri": "http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01"
+                },
+                {
+                    "value": 4,
+                    "uri": "urn:ietf:params:rtp-hdrext:sdes:mid"
+                },
+                {
+                    "value": 5,
+                    "uri": "urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id"
+                },
+                {
+                    "value": 6,
+                    "uri": "urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id"
+                }
+            ],
+            "direction": "sendonly",
+            "msid": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj e7cc172b-9b29-42d6-b3cf-502821925849",
+            "rtcpMux": "rtcp-mux",
+            "rtcpFb": [
+                {
+                    "payload": 111,
+                    "type": "transport-cc"
+                }
+            ],
+            "ssrcs": [
+                {
+                    "id": 3530707246,
+                    "attribute": "cname",
+                    "value": "thyB40F84HrKoQX4"
+                },
+                {
+                    "id": 3530707246,
+                    "attribute": "msid",
+                    "value": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj e7cc172b-9b29-42d6-b3cf-502821925849"
+                },
+                {
+                    "id": 3530707246,
+                    "attribute": "mslabel",
+                    "value": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj"
+                },
+                {
+                    "id": 3530707246,
+                    "attribute": "label",
+                    "value": "e7cc172b-9b29-42d6-b3cf-502821925849"
+                }
+            ]
+        },
+        {
+            "rtp": [
+                {
+                    "payload": 96,
+                    "codec": "VP8",
+                    "rate": 90000
+                },
+                {
+                    "payload": 97,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 98,
+                    "codec": "VP9",
+                    "rate": 90000
+                },
+                {
+                    "payload": 99,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 100,
+                    "codec": "VP9",
+                    "rate": 90000
+                },
+                {
+                    "payload": 101,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 102,
+                    "codec": "H264",
+                    "rate": 90000
+                },
+                {
+                    "payload": 121,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 127,
+                    "codec": "H264",
+                    "rate": 90000
+                },
+                {
+                    "payload": 120,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 125,
+                    "codec": "H264",
+                    "rate": 90000
+                },
+                {
+                    "payload": 107,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 108,
+                    "codec": "H264",
+                    "rate": 90000
+                },
+                {
+                    "payload": 109,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 35,
+                    "codec": "AV1X",
+                    "rate": 90000
+                },
+                {
+                    "payload": 36,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 124,
+                    "codec": "H264",
+                    "rate": 90000
+                },
+                {
+                    "payload": 119,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 123,
+                    "codec": "H264",
+                    "rate": 90000
+                },
+                {
+                    "payload": 118,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 114,
+                    "codec": "red",
+                    "rate": 90000
+                },
+                {
+                    "payload": 115,
+                    "codec": "rtx",
+                    "rate": 90000
+                },
+                {
+                    "payload": 116,
+                    "codec": "ulpfec",
+                    "rate": 90000
+                }
+            ],
+            "fmtp": [
+                {
+                    "payload": 97,
+                    "config": "apt=96"
+                },
+                {
+                    "payload": 98,
+                    "config": "profile-id=0"
+                },
+                {
+                    "payload": 99,
+                    "config": "apt=98"
+                },
+                {
+                    "payload": 100,
+                    "config": "profile-id=2"
+                },
+                {
+                    "payload": 101,
+                    "config": "apt=100"
+                },
+                {
+                    "payload": 102,
+                    "config": "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42001f"
+                },
+                {
+                    "payload": 121,
+                    "config": "apt=102"
+                },
+                {
+                    "payload": 127,
+                    "config": "level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42001f"
+                },
+                {
+                    "payload": 120,
+                    "config": "apt=127"
+                },
+                {
+                    "payload": 125,
+                    "config": "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f"
+                },
+                {
+                    "payload": 107,
+                    "config": "apt=125"
+                },
+                {
+                    "payload": 108,
+                    "config": "level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f"
+                },
+                {
+                    "payload": 109,
+                    "config": "apt=108"
+                },
+                {
+                    "payload": 36,
+                    "config": "apt=35"
+                },
+                {
+                    "payload": 124,
+                    "config": "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=4d001f"
+                },
+                {
+                    "payload": 119,
+                    "config": "apt=124"
+                },
+                {
+                    "payload": 123,
+                    "config": "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=64001f"
+                },
+                {
+                    "payload": 118,
+                    "config": "apt=123"
+                },
+                {
+                    "payload": 115,
+                    "config": "apt=114"
+                }
+            ],
+            "type": "video",
+            "port": 9,
+            "protocol": "UDP/TLS/RTP/SAVPF",
+            "payloads": "96 97 98 99 100 101 102 121 127 120 125 107 108 109 35 36 124 119 123 118 114 115 116",
+            "connection": {
+                "version": 4,
+                "ip": "0.0.0.0"
+            },
+            "rtcp": {
+                "port": 9,
+                "netType": "IN",
+                "ipVer": 4,
+                "address": "0.0.0.0"
+            },
+            "iceUfrag": "TCXZ",
+            "icePwd": "WYATdzLgBvzwgY1BhWu4ylLx",
+            "iceOptions": "trickle",
+            "fingerprint": {
+                "type": "sha-256",
+                "hash": "E5:83:06:5F:02:29:F4:9C:30:4A:38:7E:E2:56:B3:2A:F1:CA:A1:DA:28:90:8A:42:28:32:F8:52:7F:B6:C6:E9"
+            },
+            "setup": "actpass",
+            "mid": 1,
+            "ext": [
+                {
+                    "value": 14,
+                    "uri": "urn:ietf:params:rtp-hdrext:toffset"
+                },
+                {
+                    "value": 2,
+                    "uri": "http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time"
+                },
+                {
+                    "value": 13,
+                    "uri": "urn:3gpp:video-orientation"
+                },
+                {
+                    "value": 3,
+                    "uri": "http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01"
+                },
+                {
+                    "value": 12,
+                    "uri": "http://www.webrtc.org/experiments/rtp-hdrext/playout-delay"
+                },
+                {
+                    "value": 11,
+                    "uri": "http://www.webrtc.org/experiments/rtp-hdrext/video-content-type"
+                },
+                {
+                    "value": 7,
+                    "uri": "http://www.webrtc.org/experiments/rtp-hdrext/video-timing"
+                },
+                {
+                    "value": 8,
+                    "uri": "http://www.webrtc.org/experiments/rtp-hdrext/color-space"
+                },
+                {
+                    "value": 4,
+                    "uri": "urn:ietf:params:rtp-hdrext:sdes:mid"
+                },
+                {
+                    "value": 5,
+                    "uri": "urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id"
+                },
+                {
+                    "value": 6,
+                    "uri": "urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id"
+                }
+            ],
+            "direction": "sendonly",
+            "msid": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj f28d62bd-5ff2-41d4-9414-8d91dcdbd96b",
+            "rtcpMux": "rtcp-mux",
+            "rtcpRsize": "rtcp-rsize",
+            "rtcpFb": [
+                {
+                    "payload": 96,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 96,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 96,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 96,
+                    "type": "nack"
+                },
+                {
+                    "payload": 96,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 98,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 98,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 98,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 98,
+                    "type": "nack"
+                },
+                {
+                    "payload": 98,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 100,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 100,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 100,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 100,
+                    "type": "nack"
+                },
+                {
+                    "payload": 100,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 102,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 102,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 102,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 102,
+                    "type": "nack"
+                },
+                {
+                    "payload": 102,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 127,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 127,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 127,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 127,
+                    "type": "nack"
+                },
+                {
+                    "payload": 127,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 125,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 125,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 125,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 125,
+                    "type": "nack"
+                },
+                {
+                    "payload": 125,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 108,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 108,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 108,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 108,
+                    "type": "nack"
+                },
+                {
+                    "payload": 108,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 35,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 35,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 35,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 35,
+                    "type": "nack"
+                },
+                {
+                    "payload": 35,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 124,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 124,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 124,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 124,
+                    "type": "nack"
+                },
+                {
+                    "payload": 124,
+                    "type": "nack",
+                    "subtype": "pli"
+                },
+                {
+                    "payload": 123,
+                    "type": "goog-remb"
+                },
+                {
+                    "payload": 123,
+                    "type": "transport-cc"
+                },
+                {
+                    "payload": 123,
+                    "type": "ccm",
+                    "subtype": "fir"
+                },
+                {
+                    "payload": 123,
+                    "type": "nack"
+                },
+                {
+                    "payload": 123,
+                    "type": "nack",
+                    "subtype": "pli"
+                }
+            ],
+            "ssrcGroups": [
+                {
+                    "semantics": "FID",
+                    "ssrcs": "3831081262 1800623502"
+                }
+            ],
+            "ssrcs": [
+                {
+                    "id": 3831081262,
+                    "attribute": "cname",
+                    "value": "thyB40F84HrKoQX4"
+                },
+                {
+                    "id": 3831081262,
+                    "attribute": "msid",
+                    "value": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj f28d62bd-5ff2-41d4-9414-8d91dcdbd96b"
+                },
+                {
+                    "id": 3831081262,
+                    "attribute": "mslabel",
+                    "value": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj"
+                },
+                {
+                    "id": 3831081262,
+                    "attribute": "label",
+                    "value": "f28d62bd-5ff2-41d4-9414-8d91dcdbd96b"
+                },
+                {
+                    "id": 1800623502,
+                    "attribute": "cname",
+                    "value": "thyB40F84HrKoQX4"
+                },
+                {
+                    "id": 1800623502,
+                    "attribute": "msid",
+                    "value": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj f28d62bd-5ff2-41d4-9414-8d91dcdbd96b"
+                },
+                {
+                    "id": 1800623502,
+                    "attribute": "mslabel",
+                    "value": "nPm3fa9uC6yctTgF1Q6c2Tjos7H1IsGo7cDj"
+                },
+                {
+                    "id": 1800623502,
+                    "attribute": "label",
+                    "value": "f28d62bd-5ff2-41d4-9414-8d91dcdbd96b"
+                }
+            ]
+        }
+    ]
+}
