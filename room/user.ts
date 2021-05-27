@@ -1,7 +1,7 @@
 import { types } from 'mediasoup'
 
 const transportOptions = {
-	listenIps : [ { ip: "0.0.0.0", announcedIp: "192.168.219.33" } ],
+	listenIps : [ { ip: "0.0.0.0", announcedIp: "192.168.0.100" } ],
 	enableUdp : true,
 	enableTcp : true,
 	preferUdp : true
