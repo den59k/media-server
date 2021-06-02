@@ -1,7 +1,7 @@
 import { types } from 'mediasoup'
 
 const transportOptions = {
-	listenIps : [ { ip: "0.0.0.0", announcedIp: "192.168.0.100" } ],
+	listenIps : [ { ip: "0.0.0.0", announcedIp: process.env.PUBLIC_IP || "192.168.0.100" } ],
 	enableUdp : true,
 	enableTcp : true,
 	preferUdp : true
@@ -67,7 +67,6 @@ class User {
 			})
 			//await consumer.enableTraceEvent([ "rtp", "pli" ]);
 	 		consumer.on('trace', trace => console.log(trace.info.sequenceNumber + " packet with payload " + trace.info.payloadType))
-
 			this.consumers.push(consumer) 
 		}
 

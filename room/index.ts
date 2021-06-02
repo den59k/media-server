@@ -22,6 +22,17 @@ class Room {
 		await user.init(this.router)
 		return user
 	}
+
+	async addConsumersToUser (user_id: string){
+		const user = this.users.get(user_id)
+		
+		for(let [ key, user ] of this.users){
+			if(key === user_id) continue
+			user.addConsumers(user, this.router)
+		}
+
+		return user.consumers
+	}
 	
 	// async createTransport (incoming: boolean){
 		// 	const transport = await this.router.createWebRtcTransport({

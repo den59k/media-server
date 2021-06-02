@@ -18,7 +18,8 @@ server.setErrorHandler(function (error, _request, reply) {
 })
 
 const port = 5000
-server.listen(port, function (err, address) {
+const address = 'localhost'
+server.listen(process.env.PORT || port, process.env.ADDRESS || address, function (err, address) {
   if (err) {
     console.log(err)
 		return

@@ -8,7 +8,11 @@ import { getDtlsParameters, getProduceOptions } from '../libs/parse-sdp'
 
 export default async function app (fastify: AppFastifyInstance){
 
-	const worker = await createWorker({ logLevel: "debug"	})
+	const worker = await createWorker({ 
+		logLevel: "debug",
+		rtcMinPort: parseInt(process.env.RTC_MIN_PORT) || 10000,
+		rtcMaxPort: parseInt(process.env.RTC_MAX_PORT) || 59999	
+	})
 
 	fastify.decorate("worker", worker)
 	fastify.decorate("rooms", new Map())
@@ -19,6 +23,16 @@ export default async function app (fastify: AppFastifyInstance){
 		fastify.rooms.set(room.id, room)
 
 		return { room_id: room.id }
+	})
+
+	fastify.get("/rooms/:room_id", async (request) => {
+		const { room_id } = request.params as any
+
+		const users = []
+		for(let user of fastify.rooms.get(room_id).users.values())
+			users.push({ id: user.id, producerCount: user.producers.length })
+
+		return users
 	})
 
 	fastify.post("/rooms/:room_id/users/:user_id", async (request) => {
@@ -34,9 +48,13 @@ export default async function app (fastify: AppFastifyInstance){
 			sctpParameters: user.consumeTransport.sctpParameters
 		}
 
-		const offer = { sdp: generateOffer(user.consumeTransport, []), type: 'offer' }
+		const consumers = await room.addConsumersToUser(user_id)
+		
+		const offer = consumers.length > 0? 
+			({ sdp: generateOffer(user.consumeTransport, consumers), type: 'offer' }): 
+			null
 
-		return { offer: null, transport, routerRtpCapabilities: room.router.rtpCapabilities }
+		return { offer, transport, routerRtpCapabilities: room.router.rtpCapabilities }
 	})
 
 
