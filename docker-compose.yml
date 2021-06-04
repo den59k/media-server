@@ -1,10 +1,12 @@
-version: "3.9"
+version: "3"
 services:
-  web:
-    build: .
+  greendata-mediaserver:
+    image: dockerhub.greendatasoft.ru/greendata/greendata-mediaserver:latest
+    container_name: greendata-mediaserver
     ports:
       - "5000:5000"
       - "10000-10009:10000-10009/udp"
     environment:
+      RTC_MIN_PORT: 10000
       RTC_MAX_PORT: 10009
       ENABLE_TCP: "false"

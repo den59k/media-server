@@ -1,0 +1,38 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  tags:
+    - docker privileged
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - IMAGE_NAME=dockerhub.greendatasoft.ru/greendata/greendata-mediaserver:latest
+  script:
+    - echo "Now we will build an image..."$IMAGE_NAME
+    - docker login -u reader -p HkLHmcsJwfzVrdAj3Cj dockerhub.greendatasoft.ru
+    - docker build -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
+  except: [ ]
+
+deploy:
+  stage: deploy
+  tags:
+    - docker
+  image: registry.greendatasoft.ru/ubuntu:18.04-custom
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SRV_SVC_001_BOBKOV_SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - echo "$SRV_SVC_001_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - IMAGE_NAME=dockerhub.greendatasoft.ru/greendata/greendata-mediaserver:latest
+  script:
+    - ssh bobkov@srv-svc-001 "docker login -u reader -p HkLHmcsJwfzVrdAj3Cj dockerhub.greendatasoft.ru"
+    - ssh bobkov@srv-svc-001 "docker pull $IMAGE_NAME"
+    - ssh bobkov@srv-svc-001 "cd /home/csus/apps/greendata-mediaserver && docker-compose down && docker-compose up -d"
+  only:
+    - branches
+  except: [ ]
