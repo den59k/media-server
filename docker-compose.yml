@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+      - "10000-10009:10000-10009/udp"
+    environment:
+      RTC_MAX_PORT: 10009
+      ENABLE_TCP: "false"

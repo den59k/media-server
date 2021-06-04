@@ -2,8 +2,8 @@ import { types } from 'mediasoup'
 
 const transportOptions = {
 	listenIps : [ { ip: "0.0.0.0", announcedIp: process.env.PUBLIC_IP || "192.168.0.100" } ],
-	enableUdp : true,
-	enableTcp : true,
+	enableUdp : process.env.ENABLE_UDP? (process.env.ENABLE_UDP === 'true'): true,
+	enableTcp : process.env.ENABLE_TCP? (process.env.ENABLE_TCP === 'true'): true,
 	preferUdp : true
 }
 
