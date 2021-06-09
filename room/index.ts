@@ -8,10 +8,15 @@ class Room {
 	router: types.Router
 	users: Map<string, User>
 	
+	constructor (room_id?: string){
+		if(room_id)
+			this.id = room_id
+	}
+
 	async init (worker: types.Worker){
 		const router = await worker.createRouter({ mediaCodecs })
 		this.router = router
-		this.id = router.id
+		if(!this.id) this.id = router.id
 		this.users = new Map()
 	}
 

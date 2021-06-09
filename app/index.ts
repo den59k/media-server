@@ -5,6 +5,7 @@ import sdpTransform from 'sdp-transform'
 
 import { generateOffer, generateAnswer } from '../libs/sdp'
 import { getDtlsParameters, getProduceOptions } from '../libs/parse-sdp'
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 export default async function app (fastify: AppFastifyInstance){
 
@@ -17,22 +18,51 @@ export default async function app (fastify: AppFastifyInstance){
 	fastify.decorate("worker", worker)
 	fastify.decorate("rooms", new Map())
 
-	fastify.post("/rooms", async () => {
-		const room = new Room()
+	//Простой тестовый роут
+	fastify.get("/", async () => { 
+		return { word: "hello world" }
+	})
+
+	//Создание комнаты
+	const createRoomHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+		const { room_id } = request.params as any
+		if(fastify.rooms.has(room_id)) return reply.code(409).send({ error: { room_id: `Room ${room_id} already exists`} })
+
+		const room = new Room(room_id)
 		await room.init(fastify.worker)
 		fastify.rooms.set(room.id, room)
 
 		return { room_id: room.id }
+	}
+	fastify.post("/rooms", createRoomHandler)
+	fastify.post("/rooms/:room_id", createRoomHandler)
+
+	//Получение списка всех комнат
+	fastify.get("/rooms", async () => {
+		const rooms = []
+		for(let room of fastify.rooms.values())
+			rooms.push({ id: room.id, usersCount: room.users.size })
+		
+		return rooms
 	})
 
-	fastify.get("/rooms/:room_id", async (request) => {
+	//Получение информации о комнате
+	fastify.get("/rooms/:room_id", async (request, reply) => {
 		const { room_id } = request.params as any
+		const room = fastify.rooms.get(room_id)
+		if(!room) return reply.code(404).send({ error: { room_id: "Room is not exists" }})
 
 		const users = []
-		for(let user of fastify.rooms.get(room_id).users.values())
-			users.push({ id: user.id, producerCount: user.producers.length })
+		for(let user of room.users.values())
+			users.push({ 
+				id: user.id, 
+				consumeTransportId: user.consumeTransport.id, 
+				producerTransportId: user.produceTransport && user.produceTransport.id,
+				producerCname: user.producers.length > 0 && user.producers[0].rtpParameters.rtcp.cname,
+				producerCount: user.producers.length 
+			})
 
-		return users
+		return { router: { id: room.router.id }, users }
 	})
 
 	fastify.post("/rooms/:room_id/users/:user_id", async (request) => {
@@ -54,7 +84,7 @@ export default async function app (fastify: AppFastifyInstance){
 			({ sdp: generateOffer(user.consumeTransport, consumers), type: 'offer' }): 
 			null
 
-		return { offer, transport, routerRtpCapabilities: room.router.rtpCapabilities }
+		return { offer, transport }
 	})
 
 
@@ -83,15 +113,8 @@ export default async function app (fastify: AppFastifyInstance){
 			await _user.addConsumers(user, room.router)
 			
 			const offer = { sdp: generateOffer(_user.consumeTransport, _user.consumers), type: 'offer' }
-
-			const consumers = _user.consumers.map(consumer => ({
-				id: consumer.id,
-				producerId: consumer.producerId,
-				kind: consumer.kind,
-				rtpParameters: consumer.rtpParameters
-			}))
 			
-			outbound.push({ id: key, offer, consumers })
+			outbound.push({ id: key, offer })
 		}
 
 		return { answer, outbound }
@@ -114,27 +137,27 @@ export default async function app (fastify: AppFastifyInstance){
 	});
 
 
-	fastify.post("/rooms/:room_id/users/:user_id/_consume", async (request) => {
-		const { room_id, user_id } = request.params as any
-		const { dtlsParameters } = request.body as any
+	// fastify.post("/rooms/:room_id/users/:user_id/_consume", async (request) => {
+	// 	const { room_id, user_id } = request.params as any
+	// 	const { dtlsParameters } = request.body as any
 
-		const room = fastify.rooms.get(room_id)
-		const user = room.users.get(user_id)
+	// 	const room = fastify.rooms.get(room_id)
+	// 	const user = room.users.get(user_id)
 
-		await user.confirmConsumeTransport({ dtlsParameters })
+	// 	await user.confirmConsumeTransport({ dtlsParameters })
 
-		return { success: "success" }
-	})
+	// 	return { success: "success" }
+	// })
 
-	fastify.put("/rooms/:room_id/users/:user_id/_consume", async(request) => {
-		const { room_id, user_id } = request.params as any
+	// fastify.put("/rooms/:room_id/users/:user_id/_consume", async(request) => {
+	// 	const { room_id, user_id } = request.params as any
 
-		const room = fastify.rooms.get(room_id)
-		const user = room.users.get(user_id)
+	// 	const room = fastify.rooms.get(room_id)
+	// 	const user = room.users.get(user_id)
 
-		await user.resumeConsumers()
-		return { success: "success" }
-	})
+	// 	await user.resumeConsumers()
+	// 	return { success: "success" }
+	// })
 
 	// fastify.post("/rooms/:room_id/ts", async (request) => {
 	// 	const { room_id } = request.params as any

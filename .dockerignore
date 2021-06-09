@@ -7,3 +7,5 @@
 
 .gitlab-ci.yml
 docker-compose.yml
+
+.env
