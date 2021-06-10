@@ -26,13 +26,18 @@ export default async function app (fastify: AppFastifyInstance){
 	//Создание комнаты
 	const createRoomHandler = async (request: FastifyRequest, reply: FastifyReply) => {
 		const { room_id } = request.params as any
+		const { user_id } = request.body as any
+
 		if(fastify.rooms.has(room_id)) return reply.code(409).send({ error: { room_id: `Room ${room_id} already exists`} })
 
 		const room = new Room(room_id)
 		await room.init(fastify.worker)
 		fastify.rooms.set(room.id, room)
 
-		return { room_id: room.id }
+		if(user_id)
+			await room.addUser(user_id)
+
+		return { room_id: room.id, user_id }
 	}
 	fastify.post("/rooms", createRoomHandler)
 	fastify.post("/rooms/:room_id", createRoomHandler)
@@ -65,6 +70,7 @@ export default async function app (fastify: AppFastifyInstance){
 		return { router: { id: room.router.id }, users }
 	})
 
+	//Добавление пользователя в комнату
 	fastify.post("/rooms/:room_id/users/:user_id", async (request) => {
 		const { room_id, user_id } = request.params as any
 		const room = fastify.rooms.get(room_id)
@@ -87,7 +93,7 @@ export default async function app (fastify: AppFastifyInstance){
 		return { offer, transport }
 	})
 
-
+	//Начало вещания пользователем
 	fastify.post("/rooms/:room_id/users/:user_id/produce", async (request) => {
 		const { room_id, user_id } = request.params as any
 		const { offer } = request.body as any

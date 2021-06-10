@@ -54,6 +54,7 @@ class User {
 			//await producer.enableTraceEvent([ "rtp", "pli" ]);
 			producer.on('trace', trace => console.log(trace))
 		}
+		
 		return this.producers
 	}
 
