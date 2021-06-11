@@ -31,12 +31,19 @@ class Room {
 	async addConsumersToUser (user_id: string){
 		const user = this.users.get(user_id)
 		
-		for(let [ key, user ] of this.users){
+		for(let [ key, otherUser ] of this.users){
 			if(key === user_id) continue
-			user.addConsumers(user, this.router)
+			await user.addConsumers(otherUser, this.router)
 		}
 
 		return user.consumers
+	}
+
+	dispose(){
+		// for(let user of this.users.values())
+		// 	user.dispose()
+
+		this.router.close()
 	}
 	
 	// async createTransport (incoming: boolean){

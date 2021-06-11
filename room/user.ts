@@ -79,6 +79,17 @@ class User {
 			await consumer.resume()
 	}
 
+	dispose(){
+		for(let consumer of this.consumers)
+			consumer.close()
+		for(let producer of this.producers)
+			producer.close()
+		
+		this.consumeTransport.close()
+		if(this.produceTransport)
+			this.produceTransport.close()
+	}
+
 }
 
 export default User

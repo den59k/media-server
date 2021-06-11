@@ -6,6 +6,7 @@ import sdpTransform from 'sdp-transform'
 import { generateOffer, generateAnswer } from '../libs/sdp'
 import { getDtlsParameters, getProduceOptions } from '../libs/parse-sdp'
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { createRoomSchema, paramsRoomSchema, paramsSchema } from './schema';
 
 export default async function app (fastify: AppFastifyInstance){
 
@@ -26,7 +27,7 @@ export default async function app (fastify: AppFastifyInstance){
 	//Создание комнаты
 	const createRoomHandler = async (request: FastifyRequest, reply: FastifyReply) => {
 		const { room_id } = request.params as any
-		const { user_id } = request.body as any
+		const { userId } = request.body as any
 
 		if(fastify.rooms.has(room_id)) return reply.code(409).send({ error: { room_id: `Room ${room_id} already exists`} })
 
@@ -34,13 +35,13 @@ export default async function app (fastify: AppFastifyInstance){
 		await room.init(fastify.worker)
 		fastify.rooms.set(room.id, room)
 
-		if(user_id)
-			await room.addUser(user_id)
+		if(userId)
+			await room.addUser(userId)
 
-		return { room_id: room.id, user_id }
+		return { room_id: room.id, user_id: userId }
 	}
-	fastify.post("/rooms", createRoomHandler)
-	fastify.post("/rooms/:room_id", createRoomHandler)
+	fastify.post("/rooms",  { schema: createRoomSchema }, createRoomHandler)
+	fastify.post("/rooms/:room_id",  { schema: { ...createRoomSchema, ...paramsRoomSchema } }, createRoomHandler)
 
 	//Получение списка всех комнат
 	fastify.get("/rooms", async () => {
@@ -52,26 +53,32 @@ export default async function app (fastify: AppFastifyInstance){
 	})
 
 	//Получение информации о комнате
-	fastify.get("/rooms/:room_id", async (request, reply) => {
+	fastify.get("/rooms/:room_id", { schema: paramsRoomSchema }, async (request, reply) => {
 		const { room_id } = request.params as any
 		const room = fastify.rooms.get(room_id)
 		if(!room) return reply.code(404).send({ error: { room_id: "Room is not exists" }})
 
 		const users = []
-		for(let user of room.users.values())
+		for(let user of room.users.values()){
 			users.push({ 
 				id: user.id, 
-				consumeTransportId: user.consumeTransport.id, 
-				producerTransportId: user.produceTransport && user.produceTransport.id,
-				producerCname: user.producers.length > 0 && user.producers[0].rtpParameters.rtcp.cname,
-				producerCount: user.producers.length 
+				consume: {
+					transportId: user.consumeTransport.id,
+					bytesSent: (await user.consumeTransport.getStats())[0].bytesSent
+				},
+				produce: user.produceTransport && user.producers.length > 0 && {
+					transportId: user.produceTransport.id,
+					cname: user.producers[0].rtpParameters.rtcp.cname,
+					bytesReceived: (await user.produceTransport.getStats())[0].bytesReceived
+				}
 			})
+		}
 
 		return { router: { id: room.router.id }, users }
 	})
 
 	//Добавление пользователя в комнату
-	fastify.post("/rooms/:room_id/users/:user_id", async (request) => {
+	fastify.post("/rooms/:room_id/users/:user_id", { schema: paramsSchema }, async (request) => {
 		const { room_id, user_id } = request.params as any
 		const room = fastify.rooms.get(room_id)
 		const user = await room.addUser(user_id)
@@ -94,7 +101,7 @@ export default async function app (fastify: AppFastifyInstance){
 	})
 
 	//Начало вещания пользователем
-	fastify.post("/rooms/:room_id/users/:user_id/produce", async (request) => {
+	fastify.post("/rooms/:room_id/users/:user_id/produce", { schema: paramsSchema }, async (request) => {
 		const { room_id, user_id } = request.params as any
 		const { offer } = request.body as any
 
@@ -126,7 +133,7 @@ export default async function app (fastify: AppFastifyInstance){
 		return { answer, outbound }
 	})
 
-	fastify.post("/rooms/:room_id/users/:user_id/consume", async (request) => {
+	fastify.post("/rooms/:room_id/users/:user_id/consume", { schema: paramsSchema }, async (request) => {
 		const { room_id, user_id } = request.params as any
 		const { answer } = request.body as any
 
@@ -141,6 +148,16 @@ export default async function app (fastify: AppFastifyInstance){
 
 		return { success: "success" }
 	});
+
+	fastify.delete("/rooms/:room_id", { schema: paramsRoomSchema }, async (request, reply) => {
+		const { room_id } = request.params as any
+		const room = fastify.rooms.get(room_id)
+		if(!room) return reply.code(404).send({ error: { room_id: "room not found" } })
+
+		room.dispose()
+		fastify.rooms.delete(room_id)
+		return { count: 1 }
+	})
 
 
 	// fastify.post("/rooms/:room_id/users/:user_id/_consume", async (request) => {
