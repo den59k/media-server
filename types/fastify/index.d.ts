@@ -1,0 +1,18 @@
+import type { FastifyInstance } from "fastify"
+import { types } from 'mediasoup'
+import Room from '../../room/index'
+import User from "../../room/user"
+
+declare module 'fastify' {
+
+	interface FastifyInstance {
+		worker: types.Worker,
+		rooms: Map<string, Room>
+	}
+
+	interface FastifyRequest {
+    room?: Room	
+		user?: User
+  }
+
+}

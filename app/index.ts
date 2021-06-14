@@ -1,14 +1,14 @@
-import { AppFastifyInstance } from '../types/fastify';
 import { createWorker } from 'mediasoup'
 import Room from '../room';
 import sdpTransform from 'sdp-transform'
 
-import { generateOffer, generateAnswer } from '../libs/sdp'
-import { getDtlsParameters, getProduceOptions } from '../libs/parse-sdp'
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { createRoomSchema, paramsRoomSchema, paramsSchema } from './schema';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { createRoomSchema, paramsRoomSchema } from './schema';
 
-export default async function app (fastify: AppFastifyInstance){
+import roomRoutes from './room';
+import userRoutes from './user';
+
+export default async function app (fastify: FastifyInstance){
 
 	const worker = await createWorker({ 
 		logLevel: "debug",
@@ -52,113 +52,8 @@ export default async function app (fastify: AppFastifyInstance){
 		return rooms
 	})
 
-	//Получение информации о комнате
-	fastify.get("/rooms/:room_id", { schema: paramsRoomSchema }, async (request, reply) => {
-		const { room_id } = request.params as any
-		const room = fastify.rooms.get(room_id)
-		if(!room) return reply.code(404).send({ error: { room_id: "Room is not exists" }})
-
-		const users = []
-		for(let user of room.users.values()){
-			users.push({ 
-				id: user.id, 
-				consume: {
-					transportId: user.consumeTransport.id,
-					bytesSent: (await user.consumeTransport.getStats())[0].bytesSent
-				},
-				produce: user.produceTransport && user.producers.length > 0 && {
-					transportId: user.produceTransport.id,
-					cname: user.producers[0].rtpParameters.rtcp.cname,
-					bytesReceived: (await user.produceTransport.getStats())[0].bytesReceived
-				}
-			})
-		}
-
-		return { router: { id: room.router.id }, users }
-	})
-
-	//Добавление пользователя в комнату
-	fastify.post("/rooms/:room_id/users/:user_id", { schema: paramsSchema }, async (request) => {
-		const { room_id, user_id } = request.params as any
-		const room = fastify.rooms.get(room_id)
-		const user = await room.addUser(user_id)
-		
-		const transport = {
-			id: user.consumeTransport.id,
-			iceParameters: user.consumeTransport.iceParameters,
-			iceCandidates: user.consumeTransport.iceCandidates,
-			dtlsParameters: user.consumeTransport.dtlsParameters,
-			sctpParameters: user.consumeTransport.sctpParameters
-		}
-
-		const consumers = await room.addConsumersToUser(user_id)
-		
-		const offer = consumers.length > 0? 
-			({ sdp: generateOffer(user.consumeTransport, consumers), type: 'offer' }): 
-			null
-
-		return { offer, transport }
-	})
-
-	//Начало вещания пользователем
-	fastify.post("/rooms/:room_id/users/:user_id/produce", { schema: paramsSchema }, async (request) => {
-		const { room_id, user_id } = request.params as any
-		const { offer } = request.body as any
-
-		const room = fastify.rooms.get(room_id)
-		const user = room.users.get(user_id)
-		const sdp = sdpTransform.parse(offer.sdp)
-
-		const dtlsParameters = getDtlsParameters(sdp)
-		await user.createProduceTransport(room.router)
-		await user.confirmProduceTransport({ dtlsParameters })
-
-		const produceOptions = getProduceOptions (sdp)
-
-		await user.produce(produceOptions)
-		
-		const answer = { sdp: generateAnswer(user.produceTransport, user.producers ), type: 'answer' }
-
-		const outbound = []
-		for(let [ key, _user ] of room.users){
-			if(key === user_id) continue
-			
-			await _user.addConsumers(user, room.router)
-			
-			const offer = { sdp: generateOffer(_user.consumeTransport, _user.consumers), type: 'offer' }
-			
-			outbound.push({ id: key, offer })
-		}
-
-		return { answer, outbound }
-	})
-
-	fastify.post("/rooms/:room_id/users/:user_id/consume", { schema: paramsSchema }, async (request) => {
-		const { room_id, user_id } = request.params as any
-		const { answer } = request.body as any
-
-		const room = fastify.rooms.get(room_id)
-		const user = room.users.get(user_id)
-		const sdp = sdpTransform.parse(answer.sdp)
-
-		const dtlsParameters = getDtlsParameters(sdp)
-
-		await user.confirmConsumeTransport({ dtlsParameters })
-		await user.resumeConsumers()
-
-		return { success: "success" }
-	});
-
-	fastify.delete("/rooms/:room_id", { schema: paramsRoomSchema }, async (request, reply) => {
-		const { room_id } = request.params as any
-		const room = fastify.rooms.get(room_id)
-		if(!room) return reply.code(404).send({ error: { room_id: "room not found" } })
-
-		room.dispose()
-		fastify.rooms.delete(room_id)
-		return { count: 1 }
-	})
-
+	fastify.register(roomRoutes, { prefix: "/rooms/:room_id" })
+	fastify.register(userRoutes, { prefix: "/rooms/:room_id/users/:user_id" })
 
 	// fastify.post("/rooms/:room_id/users/:user_id/_consume", async (request) => {
 	// 	const { room_id, user_id } = request.params as any
