@@ -40,7 +40,7 @@ function filterRtp (rtp: any){
 }
 
 export function getProduceOptions (sdp: SessionDescription): types.ProducerOptions[]{
-	return sdp.media.map(media => ({
+	return sdp.media.filter(m => (m.type === 'video' || m.type === 'audio')).map(media => ({
 		kind: media.type === 'video'? 'video': 'audio',
 		rtpParameters: {
 			mid: media.mid.toString(),

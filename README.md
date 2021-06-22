@@ -37,7 +37,7 @@ docker build -t mediasoup .
  
 Например, для запуска контейнера с UDP портами на 10000-10009 необходимо выполнить команду
 ```
-docker run -d -p 5000:5000 -p 10000-10009:10000-10009 -e "RTC_MAX_PORT=10009" mediasoup
+docker run -d -p 5000:5000 -p 0.0.0.0:10000-10009:10000-10009/udp -e "RTC_MAX_PORT=10009" -e "ENABLE_TCP=false" -e PUBLIC_IP="188.17.152.152" mediasoup
 ```
 
 Для того, чтобы устройства смогли подключиться к указанным портам между RTC_MIN_PORT и RTC_MAX_PORT, 
