@@ -46,7 +46,7 @@ function producerToMedia(transport: types.WebRtcTransport, producer: types.Produ
 		setup: transport.dtlsParameters.role === 'client'? 'active': 'actpass',
 		rtcpMux: 'rtcp-mux',
 		rtcpFb: getRTCPFeedback(producer.rtpParameters.codecs),
-		ssrcs: [{
+		ssrcs: producer.rtpParameters.encodings[0].ssrc && [{
 				id: producer.rtpParameters.encodings[0].ssrc,
 				attribute: "cname",
 				value: producer.rtpParameters.rtcp.cname

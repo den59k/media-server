@@ -56,11 +56,11 @@ export function getProduceOptions (sdp: SessionDescription): types.ProducerOptio
 				}))
 			})),
 			headerExtensions: [],
-			encodings: [{
+			encodings: media.ssrcs? [{
 				ssrc: media.ssrcs[0].id as number,
 				dtx: false
-			}],
-			rtcp: { cname: media.ssrcs.find(i => i.attribute === 'cname').value, reducedSize: true }
+			}]: [],
+			rtcp: media.ssrcs?{ cname: media.ssrcs.find(i => i.attribute === 'cname').value, reducedSize: true }: undefined
 		}
 	}))
 }
