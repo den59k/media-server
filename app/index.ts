@@ -37,7 +37,7 @@ export default async function app (fastify: FastifyInstance){
 
 		if(userId){
 			const users = await room.addUser(userId, userInfo)
-			return { room_id: room.id, user_id: userId, users, userInfo }
+			return { roomId: room.id, userId, users, userInfo }
 		}
 
 		return { room_id: room.id }

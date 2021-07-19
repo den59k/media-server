@@ -86,8 +86,10 @@ class Connector {
   }
 
   async removeUser(user_id: string){
-    this.consumeTransports.get(user_id).close()
-    this.consumeTransports.delete(user_id)
+    if(this.consumeTransports.get(user_id)){
+      this.consumeTransports.get(user_id).close()
+      this.consumeTransports.delete(user_id)
+    }
     for(let consumers of this.consumers.values())
       consumers.delete(user_id)
   }

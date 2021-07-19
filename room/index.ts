@@ -37,14 +37,14 @@ class Room {
 			if(id === user_id) continue;
 			const connector = this.connectors.get(id)
 			if(!connector){
-				users.push({ id, userInfo })
+				users.push({ userId: id, userInfo })
 				continue;
 			}
 			const consumers = await connector.consumeUser(user_id)
 			users.push({
 				offer: { sdp: generateOffer(connector.consumeTransports.get(user_id), consumers), type: "offer" },
 				constraints: connector.getConstraints(),
-				id,
+				userId: id,
 				userInfo
 			})
 		}
@@ -61,7 +61,7 @@ class Room {
 			connector.updateConstraints(constraints)
 			return {
 				constraints,
-				id: user_id,
+				userId: user_id,
 				userInfo: this.users.get(user_id),
 				outbound: this._getOutbound([ user_id ]),
 			}
@@ -88,7 +88,7 @@ class Room {
 
 			const consumers = await connector.consumeUser(key)
 			outbound.push({ 
-				id: key,
+				userId: key,
 				userInfo: this.users.get(key),
 				offer: { sdp: generateOffer(connector.consumeTransports.get(key), consumers), type: "offer" }
 			})
@@ -96,7 +96,7 @@ class Room {
 
 		return {
 			answer: { sdp: generateAnswer(connector.produceTransport, connector.getProducers()), type: "answer" },
-			id: user_id,
+			userId: user_id,
 			userInfo: this.users.get(user_id),
 			constraints: connector.getConstraints(),
 			outbound,
@@ -109,7 +109,7 @@ class Room {
 		const outbound = this._getOutbound([user_id])
 		return { 
 			outbound, 
-			id: user_id, 
+			userId: user_id, 
 			userInfo: this.users.get(user_id),
 			constraints: { audio: false, video: false }
 		}
@@ -145,20 +145,17 @@ class Room {
 		if(this.connectors.has(user_id)){
 			this.connectors.get(user_id).close()
 			this.connectors.delete(user_id)
-			return { id: user_id, removePc: true }
 		}
 
 		this.users.delete(user_id)
-		const outbound = this._getOutbound([user_id])
-
-		return { id: user_id, userInfo: user, outbound }
+		return { userId: user_id, userInfo: user, outbound: this._getOutbound([user_id]) }
 	}
 
 	_getOutbound(exclude: Array<string>){
 		const outbound = []
 		for(let key of this.users.keys()){
 			if(exclude.includes(key)) continue
-			outbound.push({ id: key, userInfo: this.users.get(key) })
+			outbound.push({ userId: key, userInfo: this.users.get(key) })
 		}
 		return outbound
 	}
@@ -172,7 +169,7 @@ class Room {
 					consumeTransportStats.push((await connector.consumeTransports.get(key).getStats())[0])
 
 			const obj = {
-				id: key,
+				userId: key,
 				userInfo: this.users.get(key),
 				produce: this.connectors.has(key) && {
 					producerCount: this.connectors.get(key).producers.size,

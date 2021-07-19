@@ -26,7 +26,7 @@ export default async function roomRoutes (fastify: FastifyInstance){
 		if(room.users.has(user_id)) return reply.code(403).send({ error: { user_id: `user ${user_id} aleady exists` }})
 
 		const users = await room.addUser(user_id, userInfo)
-		return { id: user_id, userInfo, users }
+		return { userId: user_id, userInfo, users }
 	})
 
 	fastify.delete("/", { schema: paramsSchema }, async (request, reply) => {
