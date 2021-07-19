@@ -1,7 +1,6 @@
 import type { FastifyInstance } from "fastify"
 import { types } from 'mediasoup'
 import Room from '../../room/index'
-import User from "../../room/user"
 
 declare module 'fastify' {
 
@@ -12,7 +11,7 @@ declare module 'fastify' {
 
 	interface FastifyRequest {
     room?: Room	
-		user?: User
+		user_id?: string
   }
 
 }
