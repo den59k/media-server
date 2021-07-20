@@ -51,22 +51,20 @@ class Room {
 		return users
 	}
 
+	async updateConstraints(user_id: string, constraints: any){
+		let connector = this.connectors.get(user_id)
+		connector.updateConstraints(constraints)
+		return {
+			constraints,
+			userId: user_id,
+			userInfo: this.users.get(user_id),
+			outbound: this._getOutbound([ user_id ]),
+		}
+	}
+
 	async produce(user_id: string, sdp: string, constraints: any){
 		
 		//Если мы не отправляем SDP, то в этом случае обновляем Constraints
-		if(!sdp){
-			if(!constraints) return
-			let connector = this.connectors.get(user_id)
-			if(!connector) return
-			connector.updateConstraints(constraints)
-			return {
-				constraints,
-				userId: user_id,
-				userInfo: this.users.get(user_id),
-				outbound: this._getOutbound([ user_id ]),
-			}
-		}
-
 		const _sdp = sdpTransform.parse(sdp)
 		const produceOptions = getProduceOptions(_sdp)
 		const dtlsParameters = getDtlsParameters(_sdp)

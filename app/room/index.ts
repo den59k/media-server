@@ -9,9 +9,13 @@ export default async function roomRoutes (fastify: FastifyInstance){
     if(!room) return reply.code(404).send({ error: { room_id: "room not found" } }) 
     request.room = room
 	})
-
+ 
+	fastify.get("/", { schema: paramsSchema }, async (request) => {
+		const { room } = request
+		return { roomId: room.id, users: room._getOutbound([]) }
+	})
   //Получение информации о комнате
-	fastify.get("/", { schema: paramsSchema }, async (request, reply) => {
+	fastify.get("/stats", { schema: paramsSchema }, async (request, reply) => {
 		const { room } = request
     const users = await room.getUsersStats()
 
@@ -29,6 +33,7 @@ export default async function roomRoutes (fastify: FastifyInstance){
 		return { userId: user_id, userInfo, users }
 	})
 
+	//Удаление пользователя из комнаты
 	fastify.delete("/", { schema: paramsSchema }, async (request, reply) => {
 		const { room_id } = request.params as any
 		const room = fastify.rooms.get(room_id)

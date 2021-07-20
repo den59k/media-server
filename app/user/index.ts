@@ -26,9 +26,11 @@ export default async function userRoutes (fastify: FastifyInstance){
 		if(!offer && !room.connectors.has(user_id))
 			return reply.status(404).send({ error: { user_id: "User is not produce. Offer required" } })
 
-		//Если offer = null - завершаем вещание
-		// if(!offer && constraints.audio === false && constraints.video === false)
-		// 	return room.stopProduce(user_id)
+		//Если у нас нет offer, то мы просто обновляем constraints
+		if(!offer){
+			const response = await room.updateConstraints(user_id, constraints)
+			return response
+		}
 
 		const response = await room.produce(user_id, offer.sdp || offer, constraints)
 		return response

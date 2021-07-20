@@ -78,7 +78,10 @@ class Connector {
         paused: true,
         rtpCapabilities: this._router.rtpCapabilities
       })
-    
+      
+      // await consumer.enableTraceEvent([ "rtp", "pli" ]);
+	 		// consumer.on('trace', trace => console.log(trace.info.sequenceNumber + " packet with payload " + trace.info.payloadType))
+
       this.consumers.get(producer.id).set(user_id, consumer)
       consumers.push(consumer)
     }
