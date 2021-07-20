@@ -47,15 +47,15 @@ export default async function userRoutes (fastify: FastifyInstance){
 
   fastify.post("/consume", { schema: paramsSchema }, async (request) => {
 		const { room, user_id } = request
-		const { answers, id, answer } = request.body as any
+		const { answers, producerUserId, answer } = request.body as any
 
 		if(answers && Array.isArray(answers)){
-			for(let { id, answer } of answers)
-				await room.confirmConsumeTransport(user_id, id, answer.sdp || answer)
+			for(let { producerUserId, answer } of answers)
+				await room.confirmConsumeTransport(user_id, producerUserId, answer.sdp || answer)
 		}
 
-		if(id && answer)
-			await room.confirmConsumeTransport(user_id, id, answer.sdp || answer)
+		if(producerUserId && answer)
+			await room.confirmConsumeTransport(user_id, producerUserId, answer.sdp || answer)
 		
 		return { status: "connected" }
 	});
