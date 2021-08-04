@@ -82,6 +82,9 @@ function producerToMedia(transport: types.WebRtcTransport, producer: types.Produ
 			ssrcs: obj.ssrcs.map(item => item.id).join(" ")
 		}]
 	}
+
+	if(producer.closed)
+		obj.direction = "inactive"
 	
 	return obj
 }
@@ -89,7 +92,7 @@ function producerToMedia(transport: types.WebRtcTransport, producer: types.Produ
 export function generateOffer (transport: types.WebRtcTransport, consumers: types.Consumer[]){
 
 	const fingerprint = transport.dtlsParameters.fingerprints[transport.dtlsParameters.fingerprints.length-1]
-
+	
 	return sdpTransform.write({
 		version: 0,
 		origin: {
@@ -102,7 +105,10 @@ export function generateOffer (transport: types.WebRtcTransport, consumers: type
 		},
 		name: '-',
 		timing: { start: 0, stop: 0 },
-		groups: [ { type: 'BUNDLE', mids: consumers.map((_, index) => index).join(' ')  } ],
+		groups: consumers.length > 0?[{ 
+			type: 'BUNDLE',
+			mids: consumers.map((item) => item.rtpParameters.mid).join(' ')  
+		}]: undefined,
 		fingerprint:{
 			type: fingerprint.algorithm,
 			hash: fingerprint.value
@@ -131,7 +137,10 @@ export function generateAnswer (transport: types.WebRtcTransport, producers: typ
 		},
 		name: '-',
 		timing: { start: 0, stop: 0 },
-		groups: [ { type: 'BUNDLE', mids: producers.map((_, index) => index).join(' ')  } ],
+		groups: producers.length > 0? [{ 
+			type: 'BUNDLE', 
+			mids: producers.map((item) => item.rtpParameters.mid).join(' ')  
+		}]: undefined,
 		fingerprint:{
 			type: transport.dtlsParameters.fingerprints[0].algorithm,
 			hash: transport.dtlsParameters.fingerprints[0].value

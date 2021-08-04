@@ -27,7 +27,7 @@ export default async function app (fastify: FastifyInstance){
 	//Создание комнаты
 	const createRoomHandler = async (request: FastifyRequest, reply: FastifyReply) => {
 		const { room_id } = request.params as any
-		const { userId } = request.body as any
+		const { userId, userInfo } = request.body as any
 
 		if(fastify.rooms.has(room_id)) return reply.code(409).send({ error: { room_id: `Room ${room_id} already exists`} })
 
@@ -35,10 +35,12 @@ export default async function app (fastify: FastifyInstance){
 		await room.init(fastify.worker)
 		fastify.rooms.set(room.id, room)
 
-		if(userId)
-			await room.addUser(userId)
+		if(userId){
+			const users = await room.addUser(userId, userInfo)
+			return { roomId: room.id, userId, users, userInfo }
+		}
 
-		return { room_id: room.id, user_id: userId }
+		return { room_id: room.id }
 	}
 	fastify.post("/rooms",  { schema: createRoomSchema }, createRoomHandler)
 	fastify.post("/rooms/:room_id",  { schema: { ...createRoomSchema, ...paramsRoomSchema } }, createRoomHandler)

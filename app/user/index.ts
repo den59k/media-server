@@ -10,76 +10,66 @@ export default async function userRoutes (fastify: FastifyInstance){
   fastify.addHook("preHandler", async (request, reply) => {
 		const { room_id, user_id } = request.params as any
 		const room = fastify.rooms.get(room_id)
-    if(!room) return reply.code(404).send({ error: { room_id: "room not found" } }) 
 
-    const user = room.users.get(user_id)
-    if(!user) return reply.code(404).send({ error: { room_id: "user not found" } }) 
+    if(!room) return reply.code(404).send({ error: { room_id: "room not found" } }) 
+    if(!room.users.has(user_id)) return reply.code(404).send({ error: { room_id: "user not found" } }) 
 
     request.room = room
-    request.user = user
+    request.user_id = user_id
 	})
 
   //Начало вещания пользователем
 	fastify.post("/produce", { schema: paramsSchema }, async (request, reply) => {
-		const { room, user } = request
-		const { offer } = request.body as any
-
-		const sdp = sdpTransform.parse(offer.sdp)
-
-		const dtlsParameters = getDtlsParameters(sdp)
-		await user.createProduceTransport(room.router)
-		await user.confirmProduceTransport({ dtlsParameters })
-
-		const produceOptions = getProduceOptions (sdp)
-
-		await user.produce(produceOptions)
+		const { room, user_id } = request
+		const { offer, constraints } = request.body as any
 		
-		const answer = { sdp: generateAnswer(user.produceTransport, user.producers ), type: 'answer' }
+		if(!offer && !room.connectors.has(user_id))
+			return reply.status(404).send({ error: { user_id: "User is not produce. Offer required" } })
 
-		const outbound = []
-		for(let [ key, _user ] of room.users){
-			if(key === user.id) continue
-			
-			await _user.addConsumers(user, room.router)
-			
-			const offer = { sdp: generateOffer(_user.consumeTransport, _user.consumers ), type: 'offer' }
-			outbound.push({ id: key, offer })
+		//Если у нас нет offer, то мы просто обновляем constraints
+		if(!offer){
+			const response = await room.updateConstraints(user_id, constraints)
+			return response
 		}
 
-		return { answer, outbound }
+		const response = await room.produce(user_id, offer.sdp || offer, constraints)
+		return response
+	})
+
+	fastify.delete("/produce", { schema: paramsSchema }, async (request, reply) => {
+		const { room, user_id } = request
+		if(!room.connectors.has(user_id))
+			return reply.status(404).send({ error: { user_id: "User is not produce" } })
+		
+		const response = room.stopProduce(user_id)
+		return response
 	})
 
   fastify.post("/consume", { schema: paramsSchema }, async (request) => {
-		const { user } = request
-		const { answer } = request.body as any
+		const { room, user_id } = request
+		const { answers, producerUserId, answer } = request.body as any
 
-		const sdp = sdpTransform.parse(answer.sdp)
+		if(answers && Array.isArray(answers)){
+			for(let { producerUserId, answer } of answers)
+				await room.confirmConsumeTransport(user_id, producerUserId, answer.sdp || answer)
+		}
 
-		const dtlsParameters = getDtlsParameters(sdp)
-
-		await user.confirmConsumeTransport({ dtlsParameters })
-		await delay(100)
-		await user.resumeConsumers()
-
-		return { success: "success" }
+		if(producerUserId && answer)
+			await room.confirmConsumeTransport(user_id, producerUserId, answer.sdp || answer)
+		
+		return { status: "connected" }
 	});
 
   fastify.delete("/", { schema: paramsSchema }, async (request, reply) => {
-		const { room, user } = request
+		const { room, user_id } = request
 
-		const outbound = []
-		for(let [ key, _user ] of room.users){
-			if(key === user.id) continue
-			const count = _user.deleteConsumers(user)
-			if(count === 0) continue
+		const resp = room.deleteUser(user_id)
 
-			const offer = { sdp: generateOffer(_user.consumeTransport, _user.consumers ), type: 'offer' }
-			outbound.push({ id: key, offer })
+		if(room.users.size === 0){
+			fastify.rooms.delete(room.id)
+			room.dispose()
 		}
-
-		room.deleteUser(user.id)
-
-		return { outbound }
+		return resp
 	})
 }
 
